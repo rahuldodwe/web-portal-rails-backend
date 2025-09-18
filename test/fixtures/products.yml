@@ -1,0 +1,41 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product_code: MyString
+  name: MyString
+  product_category: MyString
+  product_type: MyString
+  manufacturer: MyString
+  manufactured_item: MyString
+  inventory: false
+  inventory_type: MyString
+  description: MyText
+  net_weight: 9.99
+  gross_weight: 9.99
+  cost: 9.99
+  no_of_packs: MyString
+  active: false
+  consumable: false
+  identification_details: 
+  measurement_details: 
+  manufacture_details: 
+
+two:
+  product_code: MyString
+  name: MyString
+  product_category: MyString
+  product_type: MyString
+  manufacturer: MyString
+  manufactured_item: MyString
+  inventory: false
+  inventory_type: MyString
+  description: MyText
+  net_weight: 9.99
+  gross_weight: 9.99
+  cost: 9.99
+  no_of_packs: MyString
+  active: false
+  consumable: false
+  identification_details: 
+  measurement_details: 
+  manufacture_details: 

@@ -1,0 +1,28 @@
+# Ignore bundler config
+/.bundle
+
+# Ignore environment files
+/.env*
+
+# Ignore logfiles and tempfiles
+/log/*
+!/log/.keep
+
+/tmp/*
+!/tmp/.keep
+
+# Ignore storage (uploaded files in development)
+/storage/*
+!/storage/.keep
+
+# Ignore vendor directory (gems, node_modules if any)
+/vendor/*
+!/vendor/.keep
+
+# Ignore pidfiles, but keep the directory
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore master key for decrypting credentials
+/config/master.key

@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: postgres
+  password: 'mysecret'
+  host: localhost
+  pool: 5
+
+development:
+  <<: *default
+  database: scelint_backend_dev
+
+test:
+  <<: *default
+  database: scelint_backend_test
+
+production:
+  <<: *default
+  database: scelint_backend_prod
+  username: scelint
+  password: <%= ENV['SCELINT_DATABASE_PASSWORD'] %>
