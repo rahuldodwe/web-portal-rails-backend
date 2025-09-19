@@ -28,8 +28,6 @@ Product.find_or_create_by!(product_code: "P-1001") do |p|
   p.name = "Cola 330ml"
   p.product_category = product_category.identifier
   p.product_type = product_type.identifier
-  p.manufacturer = "Acme Beverages"
-  p.manufactured_item = "COLA-330"
   p.inventory = true
   p.inventory_type = "Finished Goods"
   p.description = "Classic cola in 330ml can"

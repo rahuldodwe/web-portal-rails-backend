@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_122833) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_19_145645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,8 +45,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_122833) do
     t.string "name"
     t.string "product_category"
     t.string "product_type"
-    t.string "manufacturer"
-    t.string "manufactured_item"
     t.boolean "inventory"
     t.string "inventory_type"
     t.text "description"
