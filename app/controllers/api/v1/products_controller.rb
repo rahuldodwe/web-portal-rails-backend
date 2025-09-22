@@ -2,8 +2,37 @@ class Api::V1::ProductsController < ApplicationController
   before_action :set_product, only: %i[ show update destroy ]
 
   def index
-    products = Product.all
-    render json: products
+    # Pagination params
+    page = params[:page].to_i.positive? ? params[:page].to_i : 1
+    per_page = params[:per_page].to_i.positive? ? params[:per_page].to_i : 5
+
+    per_page = [per_page, 100].min
+    per_page = [per_page, 1].max
+
+    offset = (page - 1) * per_page
+
+    total_count = Product.count
+    products = Product.limit(per_page).offset(offset)
+
+    total_pages = (total_count.to_f / per_page).ceil
+    has_next_page = page < total_pages
+    has_prev_page = page > 1
+
+    render json: {
+      data: products,
+      total: total_count,
+      pagination: {
+        current_page: page,
+        per_page: per_page,
+        total_count: total_count,
+        total: total_count,
+        total_pages: total_pages,
+        has_next_page: has_next_page,
+        has_prev_page: has_prev_page,
+        next_page: has_next_page ? page + 1 : nil,
+        prev_page: has_prev_page ? page - 1 : nil
+      }
+    }
   end
 
   def paginate
@@ -32,10 +61,12 @@ class Api::V1::ProductsController < ApplicationController
     # Prepare response
     response_data = {
       data: products,
+      total: total_count,
       pagination: {
         current_page: page,
         per_page: per_page,
         total_count: total_count,
+        total: total_count,
         total_pages: total_pages,
         has_next_page: has_next_page,
         has_prev_page: has_prev_page,
@@ -173,10 +204,12 @@ class Api::V1::ProductsController < ApplicationController
       # Prepare response with pagination
       response_data = {
         data: paginated_products,
+        total: total_count,
         pagination: {
           current_page: page,
           per_page: per_page,
           total_count: total_count,
+          total: total_count,
           total_pages: total_pages,
           has_next_page: has_next_page,
           has_prev_page: has_prev_page,
@@ -187,7 +220,21 @@ class Api::V1::ProductsController < ApplicationController
 
       render json: response_data
     else
-      render json: products
+      render json: {
+        data: products,
+        total: products.count,
+        pagination: {
+          current_page: 1,
+          per_page: products.size,
+          total_count: products.count,
+          total: products.count,
+          total_pages: 1,
+          has_next_page: false,
+          has_prev_page: false,
+          next_page: nil,
+          prev_page: nil
+        }
+      }
     end
   end
 
