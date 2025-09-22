@@ -33,6 +33,13 @@ Rails.application.routes.draw do
           get :paginate
         end
       end
+      resources :edge_devices do
+        collection do
+          get :filter
+          get :sort
+          get :paginate
+        end
+      end
     end
   end
 end

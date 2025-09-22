@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_101152) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_22_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_101152) do
     t.date "last_physical_inventory_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "edge_devices", force: :cascade do |t|
+    t.integer "code"
+    t.string "name"
+    t.text "description"
+    t.boolean "registered"
+    t.boolean "status"
+    t.jsonb "serial"
+    t.jsonb "tcp"
+    t.jsonb "static"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_edge_devices_on_code", unique: true
   end
 
   create_table "locations", force: :cascade do |t|
