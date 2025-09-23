@@ -40,6 +40,13 @@ Rails.application.routes.draw do
           get :paginate
         end
       end
+      resources :passive_rfids do
+        collection do
+          get :filter
+          get :sort
+          get :paginate
+        end
+      end
     end
   end
 end

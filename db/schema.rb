@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_120000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_22_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -55,6 +55,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_120000) do
     t.string "location_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "passive_rfids", force: :cascade do |t|
+    t.string "name"
+    t.string "host_name"
+    t.integer "port"
+    t.string "manufacturer"
+    t.string "model"
+    t.text "description"
+    t.integer "antenna_count"
+    t.jsonb "antennas", default: []
+    t.integer "gpi_config"
+    t.integer "gpo_config"
+    t.boolean "enabled"
+    t.string "edge_device"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["edge_device"], name: "index_passive_rfids_on_edge_device"
+    t.index ["name"], name: "index_passive_rfids_on_name"
   end
 
   create_table "product_categories", force: :cascade do |t|

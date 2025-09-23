@@ -216,3 +216,58 @@ end
   end
 end
 
+
+# Seed Passive RFIDs
+[
+  {
+    name: "RFID-Reader-A",
+    hostName: "reader-a.local",
+    port: 5084,
+    manufacturer: "Impinj",
+    model: "R700",
+    description: "Dock door reader",
+    antennaCount: 2,
+    antennas: [
+      { antenna: 1, rxSensitivity: -70, txPower: 25, enabled: true },
+      { antenna: 2, rxSensitivity: -65, txPower: 27, enabled: true }
+    ],
+    gpiConfig: 2,
+    gpoConfig: 2,
+    enabled: true,
+    edgeDevice: "Edge-Alpha"
+  },
+  {
+    name: "RFID-Reader-B",
+    hostName: "reader-b.local",
+    port: 5084,
+    manufacturer: "Zebra",
+    model: "FX9600",
+    description: "Staging area reader",
+    antennaCount: 4,
+    antennas: [
+      { antenna: 1, rxSensitivity: -60, txPower: 29, enabled: true },
+      { antenna: 2, rxSensitivity: -62, txPower: 28, enabled: true },
+      { antenna: 3, rxSensitivity: -64, txPower: 27, enabled: false },
+      { antenna: 4, rxSensitivity: -66, txPower: 26, enabled: false }
+    ],
+    gpiConfig: 0,
+    gpoConfig: 0,
+    enabled: false,
+    edgeDevice: "Edge-Beta"
+  }
+].each do |attrs|
+  PassiveRfid.find_or_create_by!(name: attrs[:name]) do |r|
+    r.host_name = attrs[:hostName]
+    r.port = attrs[:port]
+    r.manufacturer = attrs[:manufacturer]
+    r.model = attrs[:model]
+    r.description = attrs[:description]
+    r.antenna_count = attrs[:antennaCount]
+    r.antennas = attrs[:antennas].map { |a| { "antenna" => a[:antenna], "rxSensitivity" => a[:rxSensitivity], "txPower" => a[:txPower], "enabled" => a[:enabled] } }
+    r.gpi_config = attrs[:gpiConfig]
+    r.gpo_config = attrs[:gpoConfig]
+    r.enabled = attrs[:enabled]
+    r.edge_device = attrs[:edgeDevice]
+  end
+end
+
