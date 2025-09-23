@@ -13,6 +13,42 @@ product_category = ProductCategory.find_or_create_by!(identifier: "CAT-001") do 
   pc.description = "Drinkable items"
 end
 
+# Seed Asset Provisions
+[
+  {
+    productCode: 1001,
+    site: "HQ",
+    location: "Dock-01",
+    locationType: "Dock Door",
+    quantity: 3,
+    productItems: [
+      { id: 1, uid: 10001, qty: 1, status: "Allocated" },
+      { id: 2, uid: 10002, qty: 1, status: "Allocated" },
+      { id: 3, uid: 10003, qty: 1, status: "Pending" }
+    ]
+  },
+  {
+    productCode: 1002,
+    site: "HQ",
+    location: "Rack-A1",
+    locationType: "Rack",
+    quantity: 2,
+    productItems: [
+      { id: 1, uid: 20001, qty: 1, status: "Allocated" },
+      { id: 2, uid: 20002, qty: 1, status: "Allocated" }
+    ]
+  }
+].each do |attrs|
+  AssetProvision.find_or_create_by!(product_code: attrs[:productCode], location: attrs[:location]) do |ap|
+    ap.product_code = attrs[:productCode]
+    ap.site = attrs[:site]
+    ap.location = attrs[:location]
+    ap.location_type = attrs[:locationType]
+    ap.quantity = attrs[:quantity]
+    ap.product_items = attrs[:productItems].map { |i| { "id" => i[:id], "uid" => i[:uid], "qty" => i[:qty], "status" => i[:status] } }
+  end
+end
+
 Location.find_or_create_by!(code: "LOC-001") do |l|
   l.name = "Main Warehouse"
   l.site = "HQ"

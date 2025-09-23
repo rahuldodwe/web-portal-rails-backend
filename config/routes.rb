@@ -47,6 +47,13 @@ Rails.application.routes.draw do
           get :paginate
         end
       end
+      resources :asset_provisions do
+        collection do
+          get :filter
+          get :sort
+          get :paginate
+        end
+      end
     end
   end
 end

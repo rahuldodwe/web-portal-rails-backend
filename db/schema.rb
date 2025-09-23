@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_121000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_22_122000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "asset_provisions", force: :cascade do |t|
+    t.integer "product_code"
+    t.string "site"
+    t.string "location"
+    t.string "location_type"
+    t.integer "quantity"
+    t.jsonb "product_items", default: []
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_code"], name: "index_asset_provisions_on_product_code"
+    t.index ["site"], name: "index_asset_provisions_on_site"
+  end
 
   create_table "assets", force: :cascade do |t|
     t.string "uid"
