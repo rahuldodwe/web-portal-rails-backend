@@ -92,6 +92,15 @@ class Api::V1::EdgeDevicesController < ApplicationController
       items = items.where("(static->>'longitude')::numeric = ?", static[:longitude]) if static[:longitude].present?
     end
 
+    # Text search across multiple fields
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      items = items.where(
+        "name ILIKE ? OR description ILIKE ? OR code::text ILIKE ? OR serial->>'parity' ILIKE ? OR tcp->>'ipAddress' ILIKE ?",
+        search_term, search_term, search_term, search_term, search_term
+      )
+    end
+
     if params[:page].present? || params[:per_page].present?
       page = params[:page].to_i.positive? ? params[:page].to_i : 1
       per_page = params[:per_page].to_i.positive? ? params[:per_page].to_i : 5
@@ -185,5 +194,6 @@ class Api::V1::EdgeDevicesController < ApplicationController
     )
   end
 end
+
 
 

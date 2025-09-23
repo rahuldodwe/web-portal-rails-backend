@@ -3,3 +3,4 @@ class EdgeDevice < ApplicationRecord
 end
 
 
+

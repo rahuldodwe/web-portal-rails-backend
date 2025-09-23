@@ -20,3 +20,4 @@ class CreateEdgeDevices < ActiveRecord::Migration[8.0]
 end
 
 
+
