@@ -69,6 +69,28 @@ class Api::V1::AssetsController < ApplicationController
     assets = assets.where("owner ILIKE ?", "%#{params[:owner]}%") if params[:owner].present?
     assets = assets.where("assignee ILIKE ?", "%#{params[:assignee]}%") if params[:assignee].present?
 
+    # Extended fields (accept both snake_case and camelCase query params)
+    primary_identifier = params[:primary_identifier].presence || params[:primaryIdentifier].presence
+    assets = assets.where("primary_identifier ILIKE ?", "%#{primary_identifier}%") if primary_identifier
+
+    previous_location = params[:previous_location].presence || params[:PreviousLocation].presence
+    assets = assets.where("previous_location ILIKE ?", "%#{previous_location}%") if previous_location
+
+    asset_status = params[:asset_status].presence || params[:assetStatus].presence
+    assets = assets.where("asset_status ILIKE ?", "%#{asset_status}%") if asset_status
+
+    item_revision = params[:item_revision].presence || params[:itemRevision].presence
+    assets = assets.where(item_revision: item_revision) if item_revision
+
+    condition_param = params[:condition].presence
+    assets = assets.where("condition ILIKE ?", "%#{condition_param}%") if condition_param
+
+    quantity_param = params[:quantity].presence
+    assets = assets.where(quantity: quantity_param) if quantity_param
+
+    location_move_time = params[:location_move_time].presence || params[:locationMoveTime].presence
+    assets = assets.where("location_move_time::text ILIKE ?", "%#{location_move_time}%") if location_move_time
+
     # Date filters (range support)
     assets = assets.where("last_validation_date >= ?", params[:min_last_validation_date]) if params[:min_last_validation_date].present?
     assets = assets.where("last_validation_date <= ?", params[:max_last_validation_date]) if params[:max_last_validation_date].present?
@@ -79,7 +101,10 @@ class Api::V1::AssetsController < ApplicationController
 
     if params[:search].present?
       term = "%#{params[:search]}%"
-      assets = assets.where("uid ILIKE ? OR product_code ILIKE ? OR manufacturer ILIKE ? OR batch_no ILIKE ? OR site ILIKE ? OR description ILIKE ? OR asset_type ILIKE ? OR status ILIKE ? OR location ILIKE ? OR owner ILIKE ? OR assignee ILIKE ?", term, term, term, term, term, term, term, term, term, term, term)
+      assets = assets.where(
+        "uid ILIKE ? OR product_code ILIKE ? OR manufacturer ILIKE ? OR batch_no ILIKE ? OR site ILIKE ? OR description ILIKE ? OR asset_type ILIKE ? OR status ILIKE ? OR location ILIKE ? OR owner ILIKE ? OR assignee ILIKE ? OR primary_identifier ILIKE ? OR previous_location ILIKE ? OR asset_status ILIKE ? OR condition ILIKE ?",
+        term, term, term, term, term, term, term, term, term, term, term, term, term, term, term
+      )
     end
 
     if params[:page].present? || params[:per_page].present?

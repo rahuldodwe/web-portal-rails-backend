@@ -18,5 +18,3 @@ class AddExtendedFieldsToAssets < ActiveRecord::Migration[8.0]
     add_index :assets, :asset_status
   end
 end
-
-

@@ -61,6 +61,8 @@ class Api::V1::AssetProvisionsController < ApplicationController
           asset.location ||= item.location
           asset.save!
         end
+        # Persist original product_items JSON for response compatibility
+        item.update_column(:product_items, product_items)
       end
       render json: item, status: :created
     else
@@ -87,6 +89,8 @@ class Api::V1::AssetProvisionsController < ApplicationController
           asset.location ||= @asset_provision.location
           asset.save!
         end
+        # Persist JSON mirror for response compatibility
+        @asset_provision.update_column(:product_items, product_items)
       end
       render json: @asset_provision
     else
