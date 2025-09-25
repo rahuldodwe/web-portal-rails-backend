@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   # Virtual attributes to expose manufacture_details fields for datatable
+  
   def manufacturer
     manufacture_details&.dig('manufacturer_name')
   end

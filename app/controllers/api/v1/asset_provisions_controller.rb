@@ -43,8 +43,25 @@ class Api::V1::AssetProvisionsController < ApplicationController
   def create
     attrs = asset_provision_params.to_h
 
+    product_items = attrs.delete(:product_items)
+
     item = AssetProvision.new(attrs)
     if item.save
+      # Create/update child assets from productItems to keep API stable
+      if product_items.present?
+        product_items.each do |pi|
+          uid = pi[:uid] || pi['uid']
+          next if uid.blank?
+          asset = Asset.find_or_initialize_by(uid: uid)
+          asset.asset_provision = item
+          asset.qty = pi[:qty] || pi['qty']
+          asset.status = pi[:status] || pi['status']
+          asset.product_code ||= item.product_code&.to_s
+          asset.site ||= item.site
+          asset.location ||= item.location
+          asset.save!
+        end
+      end
       render json: item, status: :created
     else
       render json: { errors: item.errors.full_messages }, status: :unprocessable_entity
@@ -52,7 +69,25 @@ class Api::V1::AssetProvisionsController < ApplicationController
   end
 
   def update
-    if @asset_provision.update(asset_provision_params)
+    attrs = asset_provision_params.to_h
+    product_items = attrs.delete(:product_items)
+
+    if @asset_provision.update(attrs)
+      # Update existing assets based on provided productItems; do not create/delete here to avoid surprises
+      if product_items.present?
+        product_items.each do |pi|
+          uid = pi[:uid] || pi['uid']
+          next if uid.blank?
+          asset = Asset.find_or_initialize_by(uid: uid)
+          asset.asset_provision = @asset_provision
+          asset.qty = pi[:qty] || pi['qty'] if (pi[:qty] || pi['qty']).present?
+          asset.status = pi[:status] || pi['status'] if (pi[:status] || pi['status']).present?
+          asset.product_code ||= @asset_provision.product_code&.to_s
+          asset.site ||= @asset_provision.site
+          asset.location ||= @asset_provision.location
+          asset.save!
+        end
+      end
       render json: @asset_provision
     else
       render json: { errors: @asset_provision.errors.full_messages }, status: :unprocessable_entity
@@ -65,7 +100,7 @@ class Api::V1::AssetProvisionsController < ApplicationController
   end
 
   def filter
-    items = AssetProvision.all
+    items = AssetProvision.includes(:assets).references(:assets)
 
     items = items.where(product_code: params[:productCode]) if params[:productCode].present?
     items = items.where("site ILIKE ?", "%#{params[:site]}%") if params[:site].present?
@@ -84,14 +119,11 @@ class Api::V1::AssetProvisionsController < ApplicationController
     if params[:productItems].present?
       pi = params[:productItems]
       if pi.is_a?(Array)
-        # If array passed, filter by any uid match
         uids = pi.map { |x| x[:uid] || x['uid'] }.compact
-        if uids.any?
-          items = items.where("EXISTS (SELECT 1 FROM jsonb_array_elements(product_items) as p WHERE (p->>'uid')::text = ANY (ARRAY[?]::text[]))", uids.map(&:to_s))
-        end
+        items = items.where(assets: { uid: uids }) if uids.any?
       else
-        items = items.where("EXISTS (SELECT 1 FROM jsonb_array_elements(product_items) as p WHERE (p->>'uid')::text = ?)", pi[:uid].to_s) if pi[:uid].present?
-        items = items.where("EXISTS (SELECT 1 FROM jsonb_array_elements(product_items) as p WHERE (p->>'status') ILIKE ?)", "%#{pi[:status]}%") if pi[:status].present?
+        items = items.where("assets.uid = ?", pi[:uid].to_s) if pi[:uid].present?
+        items = items.where("assets.status ILIKE ?", "%#{pi[:status]}%") if pi[:status].present?
       end
     end
 
@@ -143,7 +175,7 @@ class Api::V1::AssetProvisionsController < ApplicationController
   end
 
   def sort
-    items = AssetProvision.all
+    items = AssetProvision.includes(:assets)
     allowed_fields = %w[product_code site location location_type quantity created_at updated_at]
     sort_field = params[:field]
     sort_direction = params[:direction]&.downcase == 'desc' ? 'DESC' : 'ASC'

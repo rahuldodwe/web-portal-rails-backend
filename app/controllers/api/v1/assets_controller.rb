@@ -39,12 +39,7 @@ class Api::V1::AssetsController < ApplicationController
   end
 
   def create
-    asset = Asset.new(asset_params)
-    if asset.save
-      render json: asset, status: :created
-    else
-      render json: { errors: asset.errors.full_messages }, status: :unprocessable_entity
-    end
+    render json: { error: 'Creation of assets is managed via Asset Provisioning' }, status: :method_not_allowed
   end
 
   def update
@@ -56,8 +51,7 @@ class Api::V1::AssetsController < ApplicationController
   end
 
   def destroy
-    @asset.destroy
-    head :no_content
+    render json: { error: 'Deletion of assets is managed via Asset Provisioning' }, status: :method_not_allowed
   end
 
   def filter
@@ -189,6 +183,83 @@ class Api::V1::AssetsController < ApplicationController
   end
 
   def asset_params
-    params.require(:asset).permit(:uid, :product_code, :manufacturer, :batch_no, :site, :description, :asset_type, :status, :location, :owner, :assignee, :last_validation_date, :last_move_date, :last_physical_inventory_date)
+    permitted = params.require(:asset).permit(
+      :uid,
+      :product_code,
+      :manufacturer,
+      :batch_no,
+      :site,
+      :description,
+      :asset_type,
+      :status,
+      :location,
+      :owner,
+      :assignee,
+      :last_validation_date,
+      :last_move_date,
+      :last_physical_inventory_date,
+      :primaryIdentifier,
+      :locationMoveTime,
+      :PreviousLocation,
+      :assetStatus,
+      :itemRevision,
+      :condition,
+      :quantity,
+      identifiers: [:identifier, :identifierType],
+      physicalAttribute: [:expectedSite, :expectedLocation, :mobile, :rfidTagged],
+      lifecycle: [
+        :dateProduced,
+        :ProvisionTime,
+        :arrivalTime,
+        :intoserviceTime,
+        :lastValidationTime,
+        :previouslocationMoveTime,
+        :endOfLifeDate,
+        :outOfServiceTime,
+        :lastMaintenanceDate,
+        :siteDwellTime,
+        :locationDwellTime,
+        :statusDwellTime,
+        :statusLastUpdated,
+        :inWarranty,
+        :warrantyEndDate,
+        :returnByDate,
+        :lastUpdated,
+        :putawayComplete,
+        :putawatTime
+      ],
+      history: [:eventType, :description, :time, :user],
+      comment: [:comment, :commentBy]
+    )
+
+    # Map camelCase to snake_case
+    permitted[:primary_identifier] = permitted.delete(:primaryIdentifier) if permitted[:primaryIdentifier]
+    permitted[:location_move_time] = permitted.delete(:locationMoveTime) if permitted[:locationMoveTime]
+    permitted[:previous_location] = permitted.delete(:PreviousLocation) if permitted[:PreviousLocation]
+    permitted[:asset_status] = permitted.delete(:assetStatus) if permitted[:assetStatus]
+    permitted[:item_revision] = permitted.delete(:itemRevision) if permitted[:itemRevision]
+    permitted[:physical_attribute] = permitted.delete(:physicalAttribute) if permitted[:physicalAttribute]
+
+    # Normalize nested keys if present
+    if permitted[:identifiers].present?
+      permitted[:identifiers] = {
+        identifier: permitted[:identifiers][:identifier],
+        identifier_type: permitted[:identifiers][:identifierType]
+      }
+    end
+    if permitted[:physical_attribute].present?
+      pa = permitted[:physical_attribute]
+      permitted[:physical_attribute] = {
+        expected_site: pa[:expectedSite],
+        expected_location: pa[:expectedLocation],
+        mobile: pa[:mobile],
+        rfid_tagged: pa[:rfidTagged]
+      }
+    end
+    if permitted[:lifecycle].present?
+      permitted[:lifecycle] = permitted[:lifecycle]
+    end
+
+    permitted
   end
 end

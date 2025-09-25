@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_22_122000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_103000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "asset_provisions", force: :cascade do |t|
-    t.integer "product_code"
+    t.string "product_code"
     t.string "site"
     t.string "location"
     t.string "location_type"
@@ -44,6 +44,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_122000) do
     t.date "last_physical_inventory_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "asset_provision_id"
+    t.integer "qty"
+    t.string "primary_identifier"
+    t.datetime "location_move_time"
+    t.string "previous_location"
+    t.string "asset_status"
+    t.integer "item_revision"
+    t.string "condition"
+    t.integer "quantity"
+    t.jsonb "identifiers"
+    t.jsonb "physical_attribute"
+    t.jsonb "lifecycle"
+    t.jsonb "history"
+    t.jsonb "comment"
+    t.index ["asset_provision_id"], name: "index_assets_on_asset_provision_id"
+    t.index ["asset_status"], name: "index_assets_on_asset_status"
+    t.index ["primary_identifier"], name: "index_assets_on_primary_identifier"
   end
 
   create_table "edge_devices", force: :cascade do |t|
@@ -125,4 +142,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_22_122000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "assets", "asset_provisions"
 end
