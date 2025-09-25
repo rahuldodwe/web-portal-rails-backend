@@ -18,7 +18,13 @@ Rails.application.routes.draw do
         end
       end
       resources :product_categories
-      resources :product_types
+      resources :product_types do
+        collection do
+          get :filter
+          get :sort
+          get :paginate
+        end
+      end
       resources :locations do
         collection do
           get :filter
