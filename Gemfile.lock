@@ -192,6 +192,9 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.1)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -291,11 +294,11 @@ GEM
       ostruct
     stringio (3.1.7)
     thor (1.4.0)
-    thruster (0.1.15)
-    thruster (0.1.15-aarch64-linux)
-    thruster (0.1.15-arm64-darwin)
-    thruster (0.1.15-x86_64-darwin)
-    thruster (0.1.15-x86_64-linux)
+    thruster (0.1.16)
+    thruster (0.1.16-aarch64-linux)
+    thruster (0.1.16-arm64-darwin)
+    thruster (0.1.16-x86_64-darwin)
+    thruster (0.1.16-x86_64-linux)
     timeout (0.4.3)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -329,6 +332,7 @@ DEPENDENCIES
   kamal
   pg (~> 1.1)
   puma (>= 5.0)
+  rack-cors
   rails (~> 8.0.2, >= 8.0.2.1)
   rubocop-rails-omakase
   solid_cable
